@@ -2,12 +2,13 @@ package fr.manu.cqrs.domain;
 
 import java.util.Date;
 
-import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
+import fr.manu.cqrs.domain.event.MatchEvent;
+import fr.manu.cqrs.domain.event.MatchEventStore;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
 
-public class Match extends AggregateRoot {
+public class Match {
     public final MatchId id;
 
     private Date matchDate;
@@ -16,22 +17,35 @@ public class Match extends AggregateRoot {
 
     private boolean finished;
 
+    // TODO A déplacer
     private void publishEvent(MatchEvent event) {
-        // TODO Auto-generated method stub
-
+        MatchEventStore.append(event);
     }
 
-    private void handle(MatchCreatedEvent matchCreatedEvent) {
+    // TODO A déplacer + faire mieux (pattern Visitor ?) mais c'est pour l'exemple
+    public void handle(MatchEvent evt) {
+        if (MatchCreatedEvent.class.isAssignableFrom(evt.getClass())) {
+            this.handleCreation((MatchCreatedEvent) evt);
+        } else if (MatchFinishedEvent.class.isAssignableFrom(evt.getClass())) {
+            this.handleFinish((MatchFinishedEvent) evt);
+        } else if (MatchStartedEvent.class.isAssignableFrom(evt.getClass())) {
+            this.handleStart((MatchStartedEvent) evt);
+        } else {
+            throw new RuntimeException("Cannot handle event " + evt + " in Match instance");
+        }
+    }
+
+    private void handleCreation(MatchCreatedEvent matchCreatedEvent) {
         this.teams[0] = new Team(matchCreatedEvent.matchTeamName1);
         this.teams[1] = new Team(matchCreatedEvent.matchTeamName2);
         this.finished = false;
     }
 
-    private void handle(MatchFinishedEvent event) {
+    private void handleFinish(MatchFinishedEvent event) {
         this.finished = true;
     }
 
-    private void handle(MatchStartedEvent event) {
+    private void handleStart(MatchStartedEvent event) {
         this.matchDate = event.matchDate;
     }
 
@@ -69,5 +83,4 @@ public class Match extends AggregateRoot {
     public boolean isFinished() {
         return finished;
     }
-
 }
