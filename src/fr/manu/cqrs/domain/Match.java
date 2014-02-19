@@ -4,7 +4,7 @@ import java.util.Date;
 
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchEvent;
-import fr.manu.cqrs.domain.event.MatchEventStore;
+import fr.manu.cqrs.domain.event.MatchEventBus;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
 
@@ -17,9 +17,8 @@ public class Match {
 
     private boolean finished;
 
-    // TODO A déplacer
     private void publishEvent(MatchEvent event) {
-        MatchEventStore.append(event);
+        MatchEventBus.publishEvent(event);
     }
 
     // TODO A déplacer + faire mieux (pattern Visitor ?) mais c'est pour l'exemple
