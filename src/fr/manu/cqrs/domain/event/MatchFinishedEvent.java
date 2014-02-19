@@ -4,7 +4,7 @@ import java.util.Date;
 
 import fr.manu.cqrs.domain.MatchId;
 
-public class MatchFinishedEvent implements Event {
+public class MatchFinishedEvent implements MatchEvent {
     public final MatchId matchId;
 
     public final Date matchDate;
@@ -18,5 +18,10 @@ public class MatchFinishedEvent implements Event {
         this.matchDate = matchDate;
         this.homeGoals = homeGoals;
         this.awayGoals = awayGoals;
+    }
+
+    @Override
+    public MatchId getId() {
+        return matchId;
     }
 }

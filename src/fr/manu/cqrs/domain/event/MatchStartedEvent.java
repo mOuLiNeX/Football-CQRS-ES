@@ -4,7 +4,7 @@ import java.util.Date;
 
 import fr.manu.cqrs.domain.MatchId;
 
-public class MatchStartedEvent implements Event {
+public class MatchStartedEvent implements MatchEvent {
     public final MatchId matchId;
 
     public final Date matchDate;
@@ -13,5 +13,10 @@ public class MatchStartedEvent implements Event {
         super();
         this.matchId = matchId;
         this.matchDate = matchDate;
+    }
+
+    @Override
+    public MatchId getId() {
+        return matchId;
     }
 }

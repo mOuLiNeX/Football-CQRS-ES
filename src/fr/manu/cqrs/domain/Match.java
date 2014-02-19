@@ -2,7 +2,7 @@ package fr.manu.cqrs.domain;
 
 import java.util.Date;
 
-import fr.manu.cqrs.domain.event.Event;
+import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
@@ -16,7 +16,7 @@ public class Match extends AggregateRoot {
 
     private boolean finished;
 
-    private void publishEvent(Event event) {
+    private void publishEvent(MatchEvent event) {
         // TODO Auto-generated method stub
 
     }
