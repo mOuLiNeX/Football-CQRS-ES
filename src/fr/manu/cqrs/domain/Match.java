@@ -7,6 +7,7 @@ import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchEventBus;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
+import fr.manu.cqrs.exception.MatchAlreadyStartedException;
 import fr.manu.cqrs.exception.MatchNotStartedException;
 
 public class Match {
@@ -58,9 +59,10 @@ public class Match {
         publishEvent(new MatchCreatedEvent(id, home, away));
     }
 
-    public void startMatch(Date matchDate) {
-        if (this.matchDate != null)
-            System.out.print("the match has started");
+    public void startMatch(Date matchDate) throws MatchAlreadyStartedException {
+        if (this.matchDate != null) {
+            throw new MatchAlreadyStartedException("Cannot start an already started match");
+        }
         publishEvent(new MatchStartedEvent(this.id, matchDate));
     }
 
