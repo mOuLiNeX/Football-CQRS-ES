@@ -7,6 +7,7 @@ import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchEventBus;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
+import fr.manu.cqrs.exception.MatchNotStartedException;
 
 public class Match {
     public final MatchId id;
@@ -63,12 +64,16 @@ public class Match {
         publishEvent(new MatchStartedEvent(this.id, matchDate));
     }
 
-    public void finishWithScore(Score score, Date matchDate) {
+    public void finishWithScore(Score score, Date endMatchDate) throws MatchNotStartedException {
         if (this.matchDate == null)
             System.out.print("the match has not started");
-        if (finished)
-            System.out.print("the match has finished");
-        publishEvent(new MatchFinishedEvent(this.id, matchDate, score.homeGoals, score.awayGoals));
+        if (!finished) {
+            System.out.print("Finish the match");
+            if (endMatchDate.before(this.matchDate)) {
+                throw new MatchNotStartedException("Could not finish a non started match");
+            }
+            publishEvent(new MatchFinishedEvent(this.id, endMatchDate, score.homeGoals, score.awayGoals));
+        }
     }
 
     public String getHomeTeamName() {
