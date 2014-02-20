@@ -37,8 +37,8 @@ public class Match {
     }
 
     private void handleCreation(MatchCreatedEvent matchCreatedEvent) {
-        this.teams[0] = new Team(matchCreatedEvent.matchTeamName1);
-        this.teams[1] = new Team(matchCreatedEvent.matchTeamName2);
+        this.teams[0] = new Team(matchCreatedEvent.homeTeam);
+        this.teams[1] = new Team(matchCreatedEvent.awayTeam);
         this.finished = false;
     }
 

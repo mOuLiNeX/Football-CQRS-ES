@@ -5,17 +5,17 @@ import com.google.common.base.Objects;
 import fr.manu.cqrs.domain.MatchId;
 
 public class MatchCreatedEvent implements MatchEvent {
-    public final MatchId matchId;
+    private final MatchId matchId;
 
-    public final String matchTeamName1;
+    public final String homeTeam;
 
-    public final String matchTeamName2;
+    public final String awayTeam;
 
     public MatchCreatedEvent(MatchId matchId, String matchTeamName1, String matchTeamName2) {
         super();
         this.matchId = matchId;
-        this.matchTeamName1 = matchTeamName1;
-        this.matchTeamName2 = matchTeamName2;
+        this.homeTeam = matchTeamName1;
+        this.awayTeam = matchTeamName2;
     }
 
     @Override
@@ -35,12 +35,12 @@ public class MatchCreatedEvent implements MatchEvent {
             return false;
         }
         MatchCreatedEvent other = (MatchCreatedEvent) obj;
-        return Objects.equal(matchId, other.matchId) && Objects.equal(matchTeamName1, other.matchTeamName1)
-            && Objects.equal(matchTeamName2, other.matchTeamName2);
+        return Objects.equal(matchId, other.matchId) && Objects.equal(homeTeam, other.homeTeam)
+            && Objects.equal(awayTeam, other.awayTeam);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(matchId, matchTeamName1, matchTeamName2);
+        return Objects.hashCode(matchId, homeTeam, awayTeam);
     }
 }

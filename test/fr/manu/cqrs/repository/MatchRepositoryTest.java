@@ -17,7 +17,7 @@ public class MatchRepositoryTest {
 
     @Before
     public void setUp() {
-        EventSourcingHelperTest.cleanEvents();
+        EventSourcingHelperTest.init();
     }
 
     @Test

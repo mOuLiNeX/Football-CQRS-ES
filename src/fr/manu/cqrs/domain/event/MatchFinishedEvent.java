@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 import fr.manu.cqrs.domain.MatchId;
 
 public class MatchFinishedEvent implements MatchEvent {
-    public final MatchId matchId;
+    private final MatchId matchId;
 
     public final Date matchDate;
 
