@@ -1,5 +1,6 @@
 package fr.manu.cqrs.query;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -88,5 +89,33 @@ public class TeamStatisticsQueryTest {
         assertTrue(Iterables.contains(allTeams, TeamState.createDefeatStat(defeatedTeamMatch1)));
         assertTrue(Iterables.contains(allTeams, TeamState.createVictoryStat(victoriousTeamMatch2)));
         assertTrue(Iterables.contains(allTeams, TeamState.createDefeatStat(defeatedTeamMatch2)));
+    }
+
+    @Test
+    public void testStatsPerTeam() {
+        final MatchId id1 = MatchId.newMatchId();
+        final MatchId id2 = MatchId.newMatchId();
+        final String victoriousTeamMatch1 = "team1";
+        final String defeatedTeamMatch1 = "team2";
+        final String victoriousTeamMatch2 = "team3";
+        final String defeatedTeamMatch2 = "team4";
+
+        // Given events
+        EventSourcingHelperTest.givenEvents(
+            new MatchCreatedEvent(id1, victoriousTeamMatch1, defeatedTeamMatch1),
+            new MatchStartedEvent(id1, new Date()),
+            new MatchCreatedEvent(id2, defeatedTeamMatch2, victoriousTeamMatch2),
+            new MatchStartedEvent(id2, new Date()),
+            new MatchFinishedEvent(id2, new Date(), 2, 3),
+            new MatchFinishedEvent(id1, new Date(), 3, 0));
+
+        // When query
+        QueryService srv = new QueryService();
+
+        // Then expect states
+        assertEquals(TeamState.createVictoryStat(victoriousTeamMatch1), srv.getTeamStatistics(victoriousTeamMatch1));
+        assertEquals(TeamState.createVictoryStat(victoriousTeamMatch2), srv.getTeamStatistics(victoriousTeamMatch2));
+        assertEquals(TeamState.createDefeatStat(defeatedTeamMatch1), srv.getTeamStatistics(defeatedTeamMatch1));
+        assertEquals(TeamState.createDefeatStat(defeatedTeamMatch2), srv.getTeamStatistics(defeatedTeamMatch2));
     }
 }
