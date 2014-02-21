@@ -16,6 +16,7 @@ import fr.manu.cqrs.domain.MatchId;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
+import fr.manu.cqrs.service.QueryService;
 
 public class TeamStatisticsQueryTest {
     @Before
@@ -35,7 +36,8 @@ public class TeamStatisticsQueryTest {
             new MatchFinishedEvent(id, new Date(), 3, 0));
 
         // When query
-        Collection<TeamState> allTeams = TeamStatisticsQuery.findAll();
+        QueryService srv = new QueryService();
+        Collection<TeamState> allTeams = srv.getRanking();
 
         // Then expect states
         assertFalse(allTeams.isEmpty());
@@ -52,7 +54,8 @@ public class TeamStatisticsQueryTest {
             new MatchStartedEvent(id, new Date()));
 
         // When query
-        Collection<TeamState> allTeams = TeamStatisticsQuery.findAll();
+        QueryService srv = new QueryService();
+        Collection<TeamState> allTeams = srv.getRanking();
 
         // Then expect states
         assertTrue(allTeams.isEmpty());
@@ -77,7 +80,8 @@ public class TeamStatisticsQueryTest {
             new MatchFinishedEvent(id1, new Date(), 3, 0));
 
         // When query
-        Collection<TeamState> allTeams = TeamStatisticsQuery.findAll();
+        QueryService srv = new QueryService();
+        Collection<TeamState> allTeams = srv.getRanking();
 
         // Then expect states
         assertTrue(Iterables.contains(allTeams, TeamState.createVictoryStat(victoriousTeamMatch1)));
