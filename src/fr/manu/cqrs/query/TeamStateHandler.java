@@ -33,6 +33,9 @@ public class TeamStateHandler {
             away.addVictory();
         }
         TeamStatisticsQuery.addStats(home, away);
+        // Clean-up
+        tempTable.remove(event.getId(), home);
+        tempTable.remove(event.getId(), away);
     }
 
     @Subscribe
