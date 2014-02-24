@@ -10,8 +10,10 @@ public final class MatchEventBus {
     private MatchEventBus() {
     }
 
-    public static void register(Object subscriber) {
-        eventBus.register(subscriber);
+    public static void register(Object... subscribers) {
+        for (Object subscriber : subscribers) {
+            eventBus.register(subscriber);
+        }
     }
 
     public static void publishEvent(MatchEvent event) {
