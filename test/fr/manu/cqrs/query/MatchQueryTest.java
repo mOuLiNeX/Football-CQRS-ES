@@ -1,5 +1,6 @@
 package fr.manu.cqrs.query;
 
+import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -8,11 +9,13 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import fr.manu.cqrs.EventSourcingHelperTest;
+import fr.manu.cqrs.EventSourcingAsserter;
+import fr.manu.cqrs.EventSourcingtTestRule;
 import fr.manu.cqrs.domain.MatchId;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
@@ -20,76 +23,75 @@ import fr.manu.cqrs.domain.event.MatchStartedEvent;
 import fr.manu.cqrs.service.QueryService;
 
 public class MatchQueryTest {
-    @Before
-    public void setUp() {
-        EventSourcingHelperTest.init();
-    }
+	@Rule
+	public EventSourcingtTestRule defaults = new EventSourcingtTestRule();
+	private QueryService query;
 
-    @Test
-    public void testQueryPlannedMatch() {
-        final MatchId id = MatchId.newMatchId();
-        // Given events
-        EventSourcingHelperTest.givenEvents(
-            new MatchCreatedEvent(id, "team1", "team2"));
+	@Before
+	public void setUp() {
+		query = new QueryService();
+	}
 
-        // When query
-        QueryService srv = new QueryService();
-        Collection<MatchState> allMatches = srv.getCurrentMatches();
+	@Test
+	public void testQueryPlannedMatch() {
+		final MatchId id = MatchId.newMatchId();
+		// Given events
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"));
 
-        // Then expect states
-        assertFalse(allMatches.isEmpty());
-        assertTrue(Iterables.contains(allMatches, MatchState.createPlannedMatch(id)));
-    }
+		// When query
+		Collection<MatchState> allMatches = query.getCurrentMatches();
 
-    @Test
-    public void testQueryStartedMatch() {
-        final MatchId id = MatchId.newMatchId();
-        // Given events
-        EventSourcingHelperTest.givenEvents(
-            new MatchCreatedEvent(id, "team1", "team2"),
-            new MatchStartedEvent(id, new Date()));
+		// Then expect states
+		assertFalse(allMatches.isEmpty());
+		assertTrue(Iterables.contains(allMatches,
+				MatchState.createPlannedMatch(id)));
+	}
 
-        // When query
-        QueryService srv = new QueryService();
-        Collection<MatchState> allMatches = srv.getCurrentMatches();
+	@Test
+	public void testQueryStartedMatch() {
+		final MatchId id = MatchId.newMatchId();
+		// Given events
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
+				new MatchStartedEvent(id, new Date()));
 
-        // Then expect states
-        assertFalse(allMatches.isEmpty());
-        assertTrue(Iterables.contains(allMatches, MatchState.createStartedMatch(id)));
-    }
+		// When query
+		Collection<MatchState> allMatches = query.getCurrentMatches();
 
-    @Test
-    public void testQueryFinishedMatch() {
-        final MatchId id = MatchId.newMatchId();
-        // Given events
-        EventSourcingHelperTest.givenEvents(
-            new MatchCreatedEvent(id, "team1", "team2"),
-            new MatchStartedEvent(id, new Date()),
-            new MatchFinishedEvent(id, new Date(), 3, 0));
+		// Then expect states
+		assertFalse(allMatches.isEmpty());
+		assertTrue(Iterables.contains(allMatches,
+				MatchState.createStartedMatch(id)));
+	}
 
-        // When query
-        QueryService srv = new QueryService();
-        Collection<MatchState> allMatches = srv.getCurrentMatches();
+	@Test
+	public void testQueryFinishedMatch() {
+		final MatchId id = MatchId.newMatchId();
+		// Given events
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
+				new MatchStartedEvent(id, new Date()), 
+				new MatchFinishedEvent(id, new Date(), 3, 0));
 
-        // Then expect states
-        assertTrue(allMatches.isEmpty());
-    }
+		// When query
+		Collection<MatchState> allMatches = query.getCurrentMatches();
 
-    @Test
-    public void testQueryByMatch() {
-        final MatchId id1 = MatchId.newMatchId();
-        final MatchId id2 = MatchId.newMatchId();
-        // Given events
-        EventSourcingHelperTest.givenEvents(
-            new MatchCreatedEvent(id1, "team1", "team2"),
-            new MatchStartedEvent(id1, new Date()),
-            new MatchCreatedEvent(id2, "team4", "team3"));
+		// Then expect states
+		assertTrue(allMatches.isEmpty());
+	}
 
-        // When query
-        QueryService srv = new QueryService();
+	@Test
+	public void testQueryByMatch() {
+		final MatchId id1 = MatchId.newMatchId();
+		final MatchId id2 = MatchId.newMatchId();
 
-        // Then expect states
-        assertEquals(MatchState.createStartedMatch(id1), srv.getCurrentMatchById(id1));
-        assertEquals(MatchState.createPlannedMatch(id2), srv.getCurrentMatchById(id2));
-    }
+		// Given events
+		givenEvents(new MatchCreatedEvent(id1, "team1", "team2"),
+				new MatchStartedEvent(id1, new Date()), 
+				new MatchCreatedEvent(id2, "team4", "team3"));
+
+		// Then expect states
+		assertEquals(MatchState.createStartedMatch(id1),
+				query.getCurrentMatchById(id1));
+		assertEquals(MatchState.createPlannedMatch(id2),
+				query.getCurrentMatchById(id2));
+	}
 }

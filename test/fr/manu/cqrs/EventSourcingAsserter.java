@@ -10,24 +10,9 @@ import com.google.common.collect.Iterables;
 
 import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchEventBus;
-import fr.manu.cqrs.domain.event.MatchEventPersisterSubscriber;
 import fr.manu.cqrs.domain.event.MatchEventStore;
-import fr.manu.cqrs.query.MatchQuery;
-import fr.manu.cqrs.query.MatchStateHandler;
-import fr.manu.cqrs.query.TeamStateHandler;
-import fr.manu.cqrs.query.TeamStatisticsQuery;
-import fr.manu.cqrs.repository.MatchRepository;
 
-public class EventSourcingHelperTest {
-
-    public static void init() {
-        MatchEventStore.init();
-        MatchRepository.init();
-        TeamStatisticsQuery.init();
-        MatchQuery.init();
-        MatchEventBus.register(new MatchEventPersisterSubscriber(), new TeamStateHandler(),
-            new MatchStateHandler());
-    }
+public class EventSourcingAsserter {
 
     public static void givenEvents(MatchEvent... events) {
         for (MatchEvent evt : events) {
