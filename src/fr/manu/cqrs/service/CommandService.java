@@ -1,6 +1,6 @@
 package fr.manu.cqrs.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import fr.manu.cqrs.domain.Match;
 import fr.manu.cqrs.domain.MatchId;
@@ -23,14 +23,14 @@ public class CommandService {
         return id;
     }
 
-    public void startMatch(MatchId id, Date matchDate) throws MatchAlreadyStartedException {
+    public void startMatch(MatchId id, LocalDateTime matchLocalDateTime) throws MatchAlreadyStartedException {
         Match match = getMatch(id);
-        match.startMatch(matchDate);
+        match.startMatch(matchLocalDateTime);
     }
 
-    public void finishMatch(MatchId id, Score score, Date endMatchDate) throws MatchNotStartedException {
+    public void finishMatch(MatchId id, Score score, LocalDateTime endMatchLocalDateTime) throws MatchNotStartedException {
         Match match = getMatch(id);
-        match.finishWithScore(score, endMatchDate);
+		match.finishWithScore(score, endMatchLocalDateTime);
     }
 
     private Match getMatch(MatchId id) {

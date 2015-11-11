@@ -1,6 +1,6 @@
 package fr.manu.cqrs.domain.event;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.google.common.base.Objects;
 
@@ -9,9 +9,9 @@ import fr.manu.cqrs.domain.MatchId;
 public class MatchStartedEvent implements MatchEvent {
     private final MatchId matchId;
 
-    public final Date matchDate;
+    public final LocalDateTime matchDate;
 
-    public MatchStartedEvent(MatchId matchId, Date matchDate) {
+    public MatchStartedEvent(MatchId matchId, LocalDateTime matchDate) {
         super();
         this.matchId = matchId;
         this.matchDate = matchDate;

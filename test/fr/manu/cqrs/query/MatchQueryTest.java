@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,33 +43,29 @@ public class MatchQueryTest {
 
 		// Then expect states
 		assertFalse(allMatches.isEmpty());
-		assertTrue(Iterables.contains(allMatches,
-				MatchState.createPlannedMatch(id)));
+		assertTrue(Iterables.contains(allMatches, MatchState.createPlannedMatch(id)));
 	}
 
 	@Test
 	public void testQueryStartedMatch() {
 		final MatchId id = MatchId.newMatchId();
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
-				new MatchStartedEvent(id, new Date()));
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()));
 
 		// When query
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
 		assertFalse(allMatches.isEmpty());
-		assertTrue(Iterables.contains(allMatches,
-				MatchState.createStartedMatch(id)));
+		assertTrue(Iterables.contains(allMatches, MatchState.createStartedMatch(id)));
 	}
 
 	@Test
 	public void testQueryFinishedMatch() {
 		final MatchId id = MatchId.newMatchId();
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
-				new MatchStartedEvent(id, new Date()), 
-				new MatchFinishedEvent(id, new Date(), 3, 0));
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()),
+				new MatchFinishedEvent(id, LocalDateTime.now(), 3, 0));
 
 		// When query
 		Collection<MatchState> allMatches = query.getCurrentMatches();
@@ -84,14 +80,11 @@ public class MatchQueryTest {
 		final MatchId id2 = MatchId.newMatchId();
 
 		// Given events
-		givenEvents(new MatchCreatedEvent(id1, "team1", "team2"),
-				new MatchStartedEvent(id1, new Date()), 
+		givenEvents(new MatchCreatedEvent(id1, "team1", "team2"), new MatchStartedEvent(id1, LocalDateTime.now()),
 				new MatchCreatedEvent(id2, "team4", "team3"));
 
 		// Then expect states
-		assertEquals(MatchState.createStartedMatch(id1),
-				query.getCurrentMatchById(id1));
-		assertEquals(MatchState.createPlannedMatch(id2),
-				query.getCurrentMatchById(id2));
+		assertEquals(MatchState.createStartedMatch(id1), query.getCurrentMatchById(id1));
+		assertEquals(MatchState.createPlannedMatch(id2), query.getCurrentMatchById(id2));
 	}
 }

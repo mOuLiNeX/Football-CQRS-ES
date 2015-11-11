@@ -3,8 +3,10 @@ package fr.manu.cqrs.domain;
 import static fr.manu.cqrs.EventSourcingAsserter.expectEvent;
 import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.Before;
@@ -29,7 +31,7 @@ public class MatchFunctionalTest {
 	public void setUp() {
 		command = new CommandService(new MatchRepository());
 	}
-	
+
 	@Test
 	public void testCanDefineMatchWithTwoTeams() {
 		String home = "team1";
@@ -45,29 +47,28 @@ public class MatchFunctionalTest {
 	@Test
 	public void testCanStartMatchAtGivenTime() {
 		MatchId id = MatchId.newMatchId();
-		Date startMatchDate = new Date();
+		LocalDateTime startMatchLocalDateTime = LocalDateTime.now();
 
 		// Given events
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"));
 
 		// When command
-		command.startMatch(id, startMatchDate);
+		command.startMatch(id, startMatchLocalDateTime);
 
 		// Then expect event
-		expectEvent(new MatchStartedEvent(id, startMatchDate));
+		expectEvent(new MatchStartedEvent(id, startMatchLocalDateTime));
 	}
 
 	@Test(expected = MatchAlreadyStartedException.class)
 	public void testCannotStartMatchTwice() {
 		MatchId id = MatchId.newMatchId();
-		Date startMatchDate = new Date();
+		LocalDateTime startMatchLocalDateTime = LocalDateTime.now();
 
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
-				new MatchStartedEvent(id, startMatchDate));
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, startMatchLocalDateTime));
 
 		// When command
-		command.startMatch(id, startMatchDate);
+		command.startMatch(id, startMatchLocalDateTime);
 
 		// Then expect error
 	}
@@ -75,32 +76,27 @@ public class MatchFunctionalTest {
 	@Test
 	public void testCanFinishAMatchWithScore() {
 		MatchId id = MatchId.newMatchId();
-		Date startMatchDate = new Date();
-		Date endMatchDate = new Date();
+		LocalDateTime startMatchLocalDateTime = LocalDateTime.now();
+		LocalDateTime endMatchLocalDateTime = LocalDateTime.now();
 		Score score = new Score(1, 0);
 
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
-				new MatchStartedEvent(id, startMatchDate));
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, startMatchLocalDateTime));
 
 		// When command
-		command.finishMatch(id, score, endMatchDate);
+		command.finishMatch(id, score, endMatchLocalDateTime);
 
 		// Then expect event
-		expectEvent(new MatchFinishedEvent(id, endMatchDate, score.homeGoals,
-				score.awayGoals));
+		expectEvent(new MatchFinishedEvent(id, endMatchLocalDateTime, score.homeGoals, score.awayGoals));
 	}
 
 	@Test(expected = MatchNotStartedException.class)
 	public void testCannotFinishAMatchBeforeItStarts() {
 		MatchId id = MatchId.newMatchId();
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.HOUR, -1);
-		Date oneHourBefore = cal.getTime();
+		LocalDateTime oneHourBefore = LocalDateTime. now().minusHours(1);
 
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, "team1", "team2"),
-				new MatchStartedEvent(id, new Date()));
+		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()));
 
 		// When command
 		command.finishMatch(id, new Score(1, 0), oneHourBefore);
