@@ -1,18 +1,14 @@
 package fr.manu.cqrs.query;
 
 import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.google.common.collect.Iterables;
 
 import fr.manu.cqrs.EventSourcingtTestRule;
 import fr.manu.cqrs.IoCInjectorRule;
@@ -40,8 +36,7 @@ public class MatchQueryTest {
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
-		assertFalse(allMatches.isEmpty());
-		assertTrue(Iterables.contains(allMatches, MatchState.createPlannedMatch(id)));
+		Assertions.assertThat(allMatches).isNotEmpty().contains(MatchState.createPlannedMatch(id));
 	}
 
 	@Test
@@ -55,8 +50,7 @@ public class MatchQueryTest {
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
-		assertFalse(allMatches.isEmpty());
-		assertTrue(Iterables.contains(allMatches, MatchState.createStartedMatch(id)));
+		Assertions.assertThat(allMatches).isNotEmpty().contains(MatchState.createStartedMatch(id));
 	}
 
 	@Test
@@ -71,7 +65,7 @@ public class MatchQueryTest {
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
-		assertTrue(allMatches.isEmpty());
+		Assertions.assertThat(allMatches).isEmpty();
 	}
 
 	@Test
@@ -85,7 +79,7 @@ public class MatchQueryTest {
 
 		// Then expect states
 		QueryService query = inject.getInstance(QueryService.class);
-		assertEquals(MatchState.createStartedMatch(id1), query.getCurrentMatchById(id1));
-		assertEquals(MatchState.createPlannedMatch(id2), query.getCurrentMatchById(id2));
+		Assertions.assertThat(query.getCurrentMatchById(id1)).isNotNull().isEqualTo(MatchState.createStartedMatch(id1));
+		Assertions.assertThat(query.getCurrentMatchById(id2)).isNotNull().isEqualTo(MatchState.createPlannedMatch(id2));
 	}
 }

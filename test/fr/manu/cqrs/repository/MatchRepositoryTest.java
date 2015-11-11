@@ -1,10 +1,8 @@
 package fr.manu.cqrs.repository;
 
 import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,10 +33,8 @@ public class MatchRepositoryTest {
 		Match actualMatch = repository.find(id);
 
 		// Then
-		assertNotNull(actualMatch);
-		assertEquals(actualMatch.id, id);
-		assertEquals(actualMatch.getHomeTeamName(), home);
-		assertEquals(actualMatch.getAwayTeamName(), away);
+		Assertions.assertThat(actualMatch).isNotNull().matches((match) -> match.id.equals(id)
+				&& match.getAwayTeamName().equals(away) && match.getHomeTeamName().equals(home));
 	}
 
 	@Test
@@ -51,7 +47,7 @@ public class MatchRepositoryTest {
 		Match actualMatch = repository.find(unknownId);
 
 		// Then
-		assertNull(actualMatch);
+		Assertions.assertThat(actualMatch).isNull();
 	}
 
 }

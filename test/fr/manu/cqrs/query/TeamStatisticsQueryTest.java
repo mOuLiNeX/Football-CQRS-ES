@@ -1,18 +1,14 @@
 package fr.manu.cqrs.query;
 
 import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.google.common.collect.Iterables;
 
 import fr.manu.cqrs.EventSourcingtTestRule;
 import fr.manu.cqrs.IoCInjectorRule;
@@ -35,17 +31,16 @@ public class TeamStatisticsQueryTest {
 		final String victoriousTeam = "team1";
 		final String defeatedTeam = "team2";
 		// Given events
-		givenEvents(new MatchCreatedEvent(id, victoriousTeam, defeatedTeam), new MatchStartedEvent(id, LocalDateTime.now()),
-				new MatchFinishedEvent(id, LocalDateTime.now(), 3, 0));
+		givenEvents(new MatchCreatedEvent(id, victoriousTeam, defeatedTeam),
+				new MatchStartedEvent(id, LocalDateTime.now()), new MatchFinishedEvent(id, LocalDateTime.now(), 3, 0));
 
 		// When query
 		QueryService query = inject.getInstance(QueryService.class);
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
-		assertFalse(allTeams.isEmpty());
-		assertTrue(Iterables.contains(allTeams, TeamState.createVictoryStat(victoriousTeam)));
-		assertTrue(Iterables.contains(allTeams, TeamState.createDefeatStat(defeatedTeam)));
+		Assertions.assertThat(allTeams).isNotEmpty().contains(TeamState.createVictoryStat(victoriousTeam),
+				TeamState.createDefeatStat(defeatedTeam));
 	}
 
 	@Test
@@ -59,7 +54,7 @@ public class TeamStatisticsQueryTest {
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
-		assertTrue(allTeams.isEmpty());
+		Assertions.assertThat(allTeams).isEmpty();
 	}
 
 	@Test
@@ -83,10 +78,9 @@ public class TeamStatisticsQueryTest {
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
-		assertTrue(Iterables.contains(allTeams, TeamState.createVictoryStat(victoriousTeamMatch1)));
-		assertTrue(Iterables.contains(allTeams, TeamState.createDefeatStat(defeatedTeamMatch1)));
-		assertTrue(Iterables.contains(allTeams, TeamState.createVictoryStat(victoriousTeamMatch2)));
-		assertTrue(Iterables.contains(allTeams, TeamState.createDefeatStat(defeatedTeamMatch2)));
+		Assertions.assertThat(allTeams).contains(TeamState.createVictoryStat(victoriousTeamMatch1),
+				TeamState.createDefeatStat(defeatedTeamMatch1), TeamState.createVictoryStat(victoriousTeamMatch2),
+				TeamState.createDefeatStat(defeatedTeamMatch2));
 	}
 
 	@Test
@@ -107,9 +101,14 @@ public class TeamStatisticsQueryTest {
 
 		// Then expect states
 		QueryService query = inject.getInstance(QueryService.class);
-		assertEquals(TeamState.createVictoryStat(victoriousTeamMatch1), query.getTeamStatistics(victoriousTeamMatch1));
-		assertEquals(TeamState.createVictoryStat(victoriousTeamMatch2), query.getTeamStatistics(victoriousTeamMatch2));
-		assertEquals(TeamState.createDefeatStat(defeatedTeamMatch1), query.getTeamStatistics(defeatedTeamMatch1));
-		assertEquals(TeamState.createDefeatStat(defeatedTeamMatch2), query.getTeamStatistics(defeatedTeamMatch2));
+
+		Assertions.assertThat(query.getTeamStatistics(victoriousTeamMatch1))
+				.isEqualTo(TeamState.createVictoryStat(victoriousTeamMatch1));
+		Assertions.assertThat(query.getTeamStatistics(victoriousTeamMatch2))
+				.isEqualTo(TeamState.createVictoryStat(victoriousTeamMatch2));
+		Assertions.assertThat(query.getTeamStatistics(defeatedTeamMatch1))
+				.isEqualTo(TeamState.createDefeatStat(defeatedTeamMatch1));
+		Assertions.assertThat(query.getTeamStatistics(defeatedTeamMatch2))
+				.isEqualTo(TeamState.createDefeatStat(defeatedTeamMatch2));
 	}
 }
