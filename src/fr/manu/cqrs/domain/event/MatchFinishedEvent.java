@@ -1,8 +1,7 @@
 package fr.manu.cqrs.domain.event;
 
 import java.time.LocalDateTime;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.manu.cqrs.domain.MatchId;
 
@@ -39,12 +38,12 @@ public class MatchFinishedEvent implements MatchEvent {
             return false;
         }
         MatchFinishedEvent other = (MatchFinishedEvent) obj;
-        return Objects.equal(matchId, other.matchId) && Objects.equal(matchLocalDateTime, other.matchLocalDateTime)
-            && Objects.equal(homeGoals, other.homeGoals) && Objects.equal(awayGoals, other.awayGoals);
+        return Objects.equals(matchId, other.matchId) && Objects.equals(matchLocalDateTime, other.matchLocalDateTime)
+            && Objects.equals(homeGoals, other.homeGoals) && Objects.equals(awayGoals, other.awayGoals);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(matchId, matchLocalDateTime, homeGoals, awayGoals);
+        return Objects.hash(matchId, matchLocalDateTime, homeGoals, awayGoals);
     }
 }

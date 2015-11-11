@@ -1,8 +1,7 @@
 package fr.manu.cqrs.domain.event;
 
 import java.time.LocalDateTime;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.manu.cqrs.domain.MatchId;
 
@@ -34,11 +33,11 @@ public class MatchStartedEvent implements MatchEvent {
             return false;
         }
         MatchStartedEvent other = (MatchStartedEvent) obj;
-        return Objects.equal(matchId, other.matchId) && Objects.equal(matchDate, other.matchDate);
+        return Objects.equals(matchId, other.matchId) && Objects.equals(matchDate, other.matchDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(matchId, matchDate);
+        return Objects.hash(matchId, matchDate);
     }
 }

@@ -1,8 +1,9 @@
 package fr.manu.cqrs.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public class MatchId {
     private final UUID id;
@@ -24,16 +25,16 @@ public class MatchId {
         if (getClass() != obj.getClass())
             return false;
         MatchId other = (MatchId) obj;
-        return Objects.equal(this.id, other.id);
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.id);
+        return Objects.hash(this.id);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).addValue(this.id).toString();
+        return MoreObjects.toStringHelper(this).addValue(this.id).toString();
     }
 }

@@ -1,6 +1,6 @@
 package fr.manu.cqrs.query;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.manu.cqrs.domain.MatchId;
 
@@ -44,12 +44,12 @@ public class MatchState {
             return false;
         }
         MatchState other = (MatchState) obj;
-        return Objects.equal(id, other.id) && Objects.equal(status, other.status);
+        return Objects.equals(id, other.id) && Objects.equals(status, other.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, status);
+        return Objects.hash(id, status);
     }
 
 }

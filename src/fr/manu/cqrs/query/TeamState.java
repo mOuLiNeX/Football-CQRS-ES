@@ -1,6 +1,6 @@
 package fr.manu.cqrs.query;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 public class TeamState {
 
@@ -58,12 +58,12 @@ public class TeamState {
             return false;
         }
         TeamState other = (TeamState) obj;
-        return Objects.equal(name, other.name) && Objects.equal(victoryCounter, other.victoryCounter)
-            && Objects.equal(defeatCounter, other.defeatCounter);
+        return Objects.equals(name, other.name) && Objects.equals(victoryCounter, other.victoryCounter)
+            && Objects.equals(defeatCounter, other.defeatCounter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name, victoryCounter, defeatCounter);
+        return Objects.hash(name, victoryCounter, defeatCounter);
     }
 }

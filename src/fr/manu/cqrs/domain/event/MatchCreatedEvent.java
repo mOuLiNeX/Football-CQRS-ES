@@ -1,6 +1,6 @@
 package fr.manu.cqrs.domain.event;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.manu.cqrs.domain.MatchId;
 
@@ -35,12 +35,12 @@ public class MatchCreatedEvent implements MatchEvent {
             return false;
         }
         MatchCreatedEvent other = (MatchCreatedEvent) obj;
-        return Objects.equal(matchId, other.matchId) && Objects.equal(homeTeam, other.homeTeam)
-            && Objects.equal(awayTeam, other.awayTeam);
+        return Objects.equals(matchId, other.matchId) && Objects.equals(homeTeam, other.homeTeam)
+            && Objects.equals(awayTeam, other.awayTeam);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(matchId, homeTeam, awayTeam);
+        return Objects.hash(matchId, homeTeam, awayTeam);
     }
 }
