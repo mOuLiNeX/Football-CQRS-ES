@@ -14,7 +14,7 @@ public final class MatchEventStore {
 
     public static void append(MatchEvent... events) {
         for (MatchEvent evt : events) {
-            store.put(evt.getId(), evt);
+			store.put(evt.matchId, evt);
         }
     }
 

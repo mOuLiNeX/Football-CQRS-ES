@@ -17,7 +17,7 @@ public class EventSourcingAsserter {
     }
 
     public static void expectEvent(MatchEvent expectedEvt) {
-        Collection<MatchEvent> evts = MatchEventStore.getEvents(expectedEvt.getId());
+		Collection<MatchEvent> evts = MatchEventStore.getEvents(expectedEvt.matchId);
 		Assertions.assertThat(evts).isNotNull().isNotEmpty().endsWith(expectedEvt);
     }
 

@@ -21,13 +21,13 @@ public class MatchStateHandler {
 
     @Subscribe
     public void handle(MatchFinishedEvent event) {
-        MatchQuery.deleteMatch(data.get(event.getId()));
-        data.remove(event.getId());
+		MatchQuery.deleteMatch(data.get(event.matchId));
+		data.remove(event.matchId);
     }
 
     @Subscribe
     public void handle(MatchCreatedEvent event) {
-        MatchId id = event.getId();
+		MatchId id = event.matchId;
         MatchState state = new MatchState(id);
         data.put(id, state);
         MatchQuery.addMatch(state);
@@ -35,7 +35,7 @@ public class MatchStateHandler {
 
     @Subscribe
     public void handle(MatchStartedEvent event) {
-        MatchState state = data.get(event.getId());
+		MatchState state = data.get(event.matchId);
         state.status = Status.STARTED;
     }
 }

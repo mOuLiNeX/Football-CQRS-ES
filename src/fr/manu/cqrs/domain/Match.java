@@ -13,44 +13,17 @@ import fr.manu.cqrs.exception.MatchNotStartedException;
 public class Match {
     public final MatchId id;
 
-    private LocalDateTime matchDate;
+	public LocalDateTime matchDate;
 
-    private Team teams[] = new Team[2];
+	public Team teams[] = new Team[2];
 
-    private boolean finished;
+	public boolean finished;
 
     private void publishEvent(MatchEvent event) {
         MatchEventBus.publishEvent(event);
     }
 
-	// TODO A deplacer + faire mieux (pattern Visitor ?) mais c'est pour l'exemple
-    public void handle(MatchEvent evt) {
-        if (MatchCreatedEvent.class.isAssignableFrom(evt.getClass())) {
-            this.handleCreation((MatchCreatedEvent) evt);
-        } else if (MatchFinishedEvent.class.isAssignableFrom(evt.getClass())) {
-            this.handleFinish((MatchFinishedEvent) evt);
-        } else if (MatchStartedEvent.class.isAssignableFrom(evt.getClass())) {
-            this.handleStart((MatchStartedEvent) evt);
-        } else {
-            throw new RuntimeException("Cannot handle event " + evt + " in Match instance");
-        }
-    }
-
-    private void handleCreation(MatchCreatedEvent matchCreatedEvent) {
-        this.teams[0] = new Team(matchCreatedEvent.homeTeam);
-        this.teams[1] = new Team(matchCreatedEvent.awayTeam);
-        this.finished = false;
-    }
-
-    private void handleFinish(MatchFinishedEvent event) {
-        this.finished = true;
-    }
-
-    private void handleStart(MatchStartedEvent event) {
-        this.matchDate = event.matchDate;
-    }
-
-    public Match(MatchId id) {
+	public Match(MatchId id) {
         this.id = id;
     }
 

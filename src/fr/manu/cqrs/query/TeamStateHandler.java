@@ -21,7 +21,7 @@ public class TeamStateHandler {
     @SuppressWarnings("unchecked")
     @Subscribe
     public void handle(MatchFinishedEvent event) {
-        List<TeamState> teams = (List) tempTable.get(event.getId());
+		List<TeamState> teams = (List) tempTable.get(event.matchId);
 		// Convention sur l'ordre de declaration des equipes
         TeamState home = teams.get(0);
         TeamState away = teams.get(1);
@@ -34,13 +34,13 @@ public class TeamStateHandler {
         }
         TeamStatisticsQuery.addStats(home, away);
         // Clean-up
-        tempTable.remove(event.getId(), home);
-        tempTable.remove(event.getId(), away);
+		tempTable.remove(event.matchId, home);
+		tempTable.remove(event.matchId, away);
     }
 
     @Subscribe
     public void handle(MatchCreatedEvent event) {
-        tempTable.put(event.getId(), new TeamState(event.homeTeam));
-        tempTable.put(event.getId(), new TeamState(event.awayTeam));
+		tempTable.put(event.matchId, new TeamState(event.homeTeam));
+		tempTable.put(event.matchId, new TeamState(event.awayTeam));
     }
 }
