@@ -3,34 +3,27 @@ package fr.manu.cqrs.domain;
 import static fr.manu.cqrs.EventSourcingAsserter.expectEvent;
 import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import fr.manu.cqrs.EventSourcingtTestRule;
+import fr.manu.cqrs.IoCInjectorRule;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
 import fr.manu.cqrs.domain.event.MatchStartedEvent;
 import fr.manu.cqrs.exception.MatchAlreadyStartedException;
 import fr.manu.cqrs.exception.MatchNotStartedException;
-import fr.manu.cqrs.repository.MatchRepository;
 import fr.manu.cqrs.service.CommandService;
 
 public class MatchFunctionalTest {
 	@Rule
 	public EventSourcingtTestRule defaults = new EventSourcingtTestRule();
-	private CommandService command;
 
-	@Before
-	public void setUp() {
-		command = new CommandService(new MatchRepository());
-	}
+	@ClassRule
+	public static IoCInjectorRule inject = new IoCInjectorRule();
 
 	@Test
 	public void testCanDefineMatchWithTwoTeams() {
@@ -38,7 +31,7 @@ public class MatchFunctionalTest {
 		String away = "team2";
 
 		// When command
-		MatchId id = command.createMatch(home, away);
+		MatchId id = inject.getInstance(CommandService.class).createMatch(home, away);
 
 		// Then expect event
 		expectEvent(new MatchCreatedEvent(id, home, away));
@@ -53,6 +46,7 @@ public class MatchFunctionalTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"));
 
 		// When command
+		CommandService command = inject.getInstance(CommandService.class);
 		command.startMatch(id, startMatchLocalDateTime);
 
 		// Then expect event
@@ -68,6 +62,7 @@ public class MatchFunctionalTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, startMatchLocalDateTime));
 
 		// When command
+		CommandService command = inject.getInstance(CommandService.class);
 		command.startMatch(id, startMatchLocalDateTime);
 
 		// Then expect error
@@ -84,6 +79,7 @@ public class MatchFunctionalTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, startMatchLocalDateTime));
 
 		// When command
+		CommandService command = inject.getInstance(CommandService.class);
 		command.finishMatch(id, score, endMatchLocalDateTime);
 
 		// Then expect event
@@ -93,12 +89,13 @@ public class MatchFunctionalTest {
 	@Test(expected = MatchNotStartedException.class)
 	public void testCannotFinishAMatchBeforeItStarts() {
 		MatchId id = MatchId.newMatchId();
-		LocalDateTime oneHourBefore = LocalDateTime. now().minusHours(1);
+		LocalDateTime oneHourBefore = LocalDateTime.now().minusHours(1);
 
 		// Given events
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()));
 
 		// When command
+		CommandService command = inject.getInstance(CommandService.class);
 		command.finishMatch(id, new Score(1, 0), oneHourBefore);
 
 		// Then expect error

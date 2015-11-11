@@ -5,17 +5,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import fr.manu.cqrs.EventSourcingAsserter;
 import fr.manu.cqrs.EventSourcingtTestRule;
+import fr.manu.cqrs.IoCInjectorRule;
 import fr.manu.cqrs.domain.MatchId;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
@@ -25,12 +25,9 @@ import fr.manu.cqrs.service.QueryService;
 public class MatchQueryTest {
 	@Rule
 	public EventSourcingtTestRule defaults = new EventSourcingtTestRule();
-	private QueryService query;
 
-	@Before
-	public void setUp() {
-		query = new QueryService();
-	}
+	@ClassRule
+	public static IoCInjectorRule inject = new IoCInjectorRule();
 
 	@Test
 	public void testQueryPlannedMatch() {
@@ -39,6 +36,7 @@ public class MatchQueryTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
@@ -53,6 +51,7 @@ public class MatchQueryTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
@@ -68,6 +67,7 @@ public class MatchQueryTest {
 				new MatchFinishedEvent(id, LocalDateTime.now(), 3, 0));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<MatchState> allMatches = query.getCurrentMatches();
 
 		// Then expect states
@@ -84,6 +84,7 @@ public class MatchQueryTest {
 				new MatchCreatedEvent(id2, "team4", "team3"));
 
 		// Then expect states
+		QueryService query = inject.getInstance(QueryService.class);
 		assertEquals(MatchState.createStartedMatch(id1), query.getCurrentMatchById(id1));
 		assertEquals(MatchState.createPlannedMatch(id2), query.getCurrentMatchById(id2));
 	}

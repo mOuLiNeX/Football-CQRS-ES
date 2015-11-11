@@ -2,12 +2,15 @@ package fr.manu.cqrs.service;
 
 import java.util.Collection;
 
+import javax.inject.Singleton;
+
 import fr.manu.cqrs.domain.MatchId;
 import fr.manu.cqrs.query.MatchQuery;
 import fr.manu.cqrs.query.MatchState;
 import fr.manu.cqrs.query.TeamState;
 import fr.manu.cqrs.query.TeamStatisticsQuery;
 
+@Singleton
 public class QueryService {
 
     public QueryService() {

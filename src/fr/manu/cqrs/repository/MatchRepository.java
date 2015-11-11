@@ -3,6 +3,8 @@ package fr.manu.cqrs.repository;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import com.google.common.collect.Maps;
 
 import fr.manu.cqrs.domain.Match;
@@ -11,6 +13,7 @@ import fr.manu.cqrs.domain.event.MatchEvent;
 import fr.manu.cqrs.domain.event.MatchEventStore;
 
 // TODO Abstraction
+@Singleton
 public class MatchRepository {
     private final static Map<MatchId, Match> memDB = Maps.newHashMap();
 

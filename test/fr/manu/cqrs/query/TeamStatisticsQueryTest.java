@@ -8,13 +8,14 @@ import static org.junit.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
 import fr.manu.cqrs.EventSourcingtTestRule;
+import fr.manu.cqrs.IoCInjectorRule;
 import fr.manu.cqrs.domain.MatchId;
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchFinishedEvent;
@@ -24,12 +25,9 @@ import fr.manu.cqrs.service.QueryService;
 public class TeamStatisticsQueryTest {
 	@Rule
 	public EventSourcingtTestRule defaults = new EventSourcingtTestRule();
-	private QueryService query;
 
-	@Before
-	public void setUp() {
-		query = new QueryService();
-	}
+	@ClassRule
+	public static IoCInjectorRule inject = new IoCInjectorRule();
 
 	@Test
 	public void testFinishingMatchProduceStats() {
@@ -41,6 +39,7 @@ public class TeamStatisticsQueryTest {
 				new MatchFinishedEvent(id, LocalDateTime.now(), 3, 0));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
@@ -56,6 +55,7 @@ public class TeamStatisticsQueryTest {
 		givenEvents(new MatchCreatedEvent(id, "team1", "team2"), new MatchStartedEvent(id, LocalDateTime.now()));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
@@ -79,6 +79,7 @@ public class TeamStatisticsQueryTest {
 				new MatchFinishedEvent(id1, LocalDateTime.now(), 3, 0));
 
 		// When query
+		QueryService query = inject.getInstance(QueryService.class);
 		Collection<TeamState> allTeams = query.getRanking();
 
 		// Then expect states
@@ -105,6 +106,7 @@ public class TeamStatisticsQueryTest {
 				new MatchFinishedEvent(id1, LocalDateTime.now(), 3, 0));
 
 		// Then expect states
+		QueryService query = inject.getInstance(QueryService.class);
 		assertEquals(TeamState.createVictoryStat(victoriousTeamMatch1), query.getTeamStatistics(victoriousTeamMatch1));
 		assertEquals(TeamState.createVictoryStat(victoriousTeamMatch2), query.getTeamStatistics(victoriousTeamMatch2));
 		assertEquals(TeamState.createDefeatStat(defeatedTeamMatch1), query.getTeamStatistics(defeatedTeamMatch1));
