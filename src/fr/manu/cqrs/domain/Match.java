@@ -1,7 +1,6 @@
 package fr.manu.cqrs.domain;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import fr.manu.cqrs.domain.event.MatchCreatedEvent;
 import fr.manu.cqrs.domain.event.MatchEvent;
@@ -24,7 +23,7 @@ public class Match {
         MatchEventBus.publishEvent(event);
     }
 
-    // TODO A déplacer + faire mieux (pattern Visitor ?) mais c'est pour l'exemple
+	// TODO A deplacer + faire mieux (pattern Visitor ?) mais c'est pour l'exemple
     public void handle(MatchEvent evt) {
         if (MatchCreatedEvent.class.isAssignableFrom(evt.getClass())) {
             this.handleCreation((MatchCreatedEvent) evt);

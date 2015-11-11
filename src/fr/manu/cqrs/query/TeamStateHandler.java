@@ -22,7 +22,7 @@ public class TeamStateHandler {
     @Subscribe
     public void handle(MatchFinishedEvent event) {
         List<TeamState> teams = (List) tempTable.get(event.getId());
-        // Convention sur l'ordre de déclaration des équipes
+		// Convention sur l'ordre de declaration des equipes
         TeamState home = teams.get(0);
         TeamState away = teams.get(1);
         if (event.homeGoals > event.awayGoals) {
