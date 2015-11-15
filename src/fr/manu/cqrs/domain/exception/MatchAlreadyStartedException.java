@@ -1,4 +1,4 @@
-package fr.manu.cqrs.exception;
+package fr.manu.cqrs.domain.exception;
 
 @SuppressWarnings("serial")
 public class MatchAlreadyStartedException extends RuntimeException {

@@ -4,32 +4,34 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import fr.manu.cqrs.domain.MatchId;
 
-// TODO A bouger (code infra)
+@Singleton
 public class MatchQuery {
-	private static final List<MatchState> states = Lists.newArrayList();
+	private final List<MatchState> states = Lists.newArrayList();
 
-	public static Collection<MatchState> findAll() {
+	public Collection<MatchState> findAll() {
 		return states;
 	}
 
-	public static MatchState findById(final MatchId id) {
+	public MatchState findById(final MatchId id) {
 		return Iterables.find(states, input -> input.id.equals(id));
 	}
 
-	static void addMatch(MatchState... stat) {
+	void addMatch(MatchState... stat) {
 		states.addAll(Arrays.asList(stat));
 	}
 
-	static void deleteMatch(MatchState... stat) {
+	void deleteMatch(MatchState... stat) {
 		states.removeAll(Arrays.asList(stat));
 	}
 
-	public static void init() {
+	public void init() {
 		states.clear();
 	}
 

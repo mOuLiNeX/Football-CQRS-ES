@@ -3,8 +3,6 @@ package fr.manu.cqrs.domain;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.google.common.base.MoreObjects;
-
 public class MatchId {
     private final UUID id;
 
@@ -31,10 +29,5 @@ public class MatchId {
     @Override
     public int hashCode() {
         return Objects.hash(this.id);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(this.id).toString();
     }
 }

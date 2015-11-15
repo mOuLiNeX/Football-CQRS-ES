@@ -1,10 +1,9 @@
-package fr.manu.cqrs.domain.event;
+package fr.manu.cqrs.events;
 
 import java.util.Objects;
 
 import fr.manu.cqrs.domain.Match;
 import fr.manu.cqrs.domain.MatchId;
-import fr.manu.cqrs.domain.Team;
 
 public class MatchCreatedEvent extends MatchEvent {
 	public final String homeTeam;
@@ -18,10 +17,9 @@ public class MatchCreatedEvent extends MatchEvent {
 	}
 
 	@Override
-	public void applyOn(Match match) {
-		match.teams[0] = new Team(this.homeTeam);
-		match.teams[1] = new Team(this.awayTeam);
-		match.finished = false;
+	public Match applyOn(Match match) {
+		Match created = new Match(matchId, homeTeam, awayTeam);
+		return created;
 	}
 
 	@Override

@@ -1,46 +1,51 @@
 package fr.manu.cqrs.query;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 
 import fr.manu.cqrs.domain.MatchId;
-import fr.manu.cqrs.domain.event.MatchCreatedEvent;
-import fr.manu.cqrs.domain.event.MatchFinishedEvent;
+import fr.manu.cqrs.events.MatchCreatedEvent;
+import fr.manu.cqrs.events.MatchFinishedEvent;
 
+@Singleton
 public class TeamStateHandler {
+	@Inject
+	TeamStatisticsQuery query;
 
-    Multimap<MatchId, TeamState> tempTable;
+	Map<MatchId, Map<String, TeamState>> tempTable;
 
-    public TeamStateHandler() {
-        tempTable = LinkedListMultimap.create();
-    }
+	public TeamStateHandler() {
+		tempTable = new HashMap<>();
+	}
 
-    @SuppressWarnings("unchecked")
-    @Subscribe
-    public void handle(MatchFinishedEvent event) {
-		List<TeamState> teams = (List) tempTable.get(event.matchId);
+	@Subscribe
+	public void handle(MatchFinishedEvent event) {
+		Map<String, TeamState> teams = (Map<String, TeamState>) tempTable.get(event.matchId);
 		// Convention sur l'ordre de declaration des equipes
-        TeamState home = teams.get(0);
-        TeamState away = teams.get(1);
-        if (event.homeGoals > event.awayGoals) {
-            home.addVictory();
-            away.addDefeat();
-        } else {
-            home.addDefeat();
-            away.addVictory();
-        }
-        TeamStatisticsQuery.addStats(home, away);
-        // Clean-up
+		TeamState home = teams.get("home");
+		TeamState away = teams.get("away");
+		if (event.homeGoals > event.awayGoals) {
+			home.addVictory();
+			away.addDefeat();
+		} else {
+			home.addDefeat();
+			away.addVictory();
+		}
+		query.addStats(home, away);
+		// Clean-up
 		tempTable.remove(event.matchId, home);
 		tempTable.remove(event.matchId, away);
-    }
+	}
 
-    @Subscribe
-    public void handle(MatchCreatedEvent event) {
-		tempTable.put(event.matchId, new TeamState(event.homeTeam));
-		tempTable.put(event.matchId, new TeamState(event.awayTeam));
-    }
+	@Subscribe
+	public void handle(MatchCreatedEvent event) {
+		tempTable.put(event.matchId,
+				ImmutableMap.of("home", new TeamState(event.homeTeam), "away", new TeamState(event.awayTeam)));
+	}
 }

@@ -1,4 +1,4 @@
-package fr.manu.cqrs.domain.event;
+package fr.manu.cqrs.events;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -15,8 +15,9 @@ public class MatchStartedEvent extends MatchEvent {
 	}
 
 	@Override
-	public void applyOn(Match match) {
-		match.matchDate = this.matchDate;
+	public Match applyOn(Match match) {
+		match.startMatch(this.matchDate);
+		return match;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package fr.manu.cqrs.domain.event;
+package fr.manu.cqrs.events;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public abstract class MatchEvent implements Comparable<MatchEvent> {
 		id = UUID.randomUUID();
 	}
 
-	public abstract void applyOn(Match match);
+	public abstract Match applyOn(Match match);
 
 	@Override
 	public int compareTo(MatchEvent other) {

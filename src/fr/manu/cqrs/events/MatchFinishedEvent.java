@@ -1,28 +1,30 @@
-package fr.manu.cqrs.domain.event;
+package fr.manu.cqrs.events;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import fr.manu.cqrs.domain.Match;
 import fr.manu.cqrs.domain.MatchId;
+import fr.manu.cqrs.domain.Score;
 
 public class MatchFinishedEvent extends MatchEvent {
 
-	public final LocalDateTime matchLocalDateTime;
+	public final LocalDateTime endMatchDate;
 
 	public final int homeGoals;
 	public final int awayGoals;
 
-	public MatchFinishedEvent(MatchId matchId, LocalDateTime matchLocalDateTime, int homeGoals, int awayGoals) {
+	public MatchFinishedEvent(MatchId matchId, LocalDateTime endMatchDate, int homeGoals, int awayGoals) {
 		super(matchId);
-		this.matchLocalDateTime = matchLocalDateTime;
+		this.endMatchDate = endMatchDate;
 		this.homeGoals = homeGoals;
 		this.awayGoals = awayGoals;
 	}
 
 	@Override
-	public void applyOn(Match match) {
-		match.finished = true;
+	public Match applyOn(Match match) {
+		match.finishWithScore(new Score(homeGoals, awayGoals), endMatchDate);
+		return match;
 	}
 
 	@Override
@@ -37,12 +39,12 @@ public class MatchFinishedEvent extends MatchEvent {
 			return false;
 		}
 		MatchFinishedEvent other = (MatchFinishedEvent) obj;
-		return Objects.equals(matchId, other.matchId) && Objects.equals(matchLocalDateTime, other.matchLocalDateTime)
+		return Objects.equals(matchId, other.matchId) && Objects.equals(endMatchDate, other.endMatchDate)
 				&& Objects.equals(homeGoals, other.homeGoals) && Objects.equals(awayGoals, other.awayGoals);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(matchId, matchLocalDateTime, homeGoals, awayGoals);
+		return Objects.hash(matchId, endMatchDate, homeGoals, awayGoals);
 	}
 }

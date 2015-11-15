@@ -1,7 +1,5 @@
 package fr.manu.cqrs.repository;
 
-import static fr.manu.cqrs.EventSourcingAsserter.givenEvents;
-
 import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -11,14 +9,14 @@ import fr.manu.cqrs.EventSourcingtTestRule;
 import fr.manu.cqrs.IoCInjectorRule;
 import fr.manu.cqrs.domain.Match;
 import fr.manu.cqrs.domain.MatchId;
-import fr.manu.cqrs.domain.event.MatchCreatedEvent;
+import fr.manu.cqrs.events.MatchCreatedEvent;
 
 public class MatchRepositoryTest {
-	@Rule
-	public EventSourcingtTestRule defaults = new EventSourcingtTestRule();
-
 	@ClassRule
-	public static IoCInjectorRule inject = new IoCInjectorRule();
+	public static final IoCInjectorRule INJECT = new IoCInjectorRule();
+
+	@Rule
+	public EventSourcingtTestRule eventSrcContext = new EventSourcingtTestRule(INJECT);
 
 	@Test
 	public void canReadSavedMatchById() {
@@ -26,10 +24,10 @@ public class MatchRepositoryTest {
 		MatchId id = MatchId.newMatchId();
 		String home = "team1";
 		String away = "team2";
-		givenEvents(new MatchCreatedEvent(id, home, away));
+		eventSrcContext.givenEvents(new MatchCreatedEvent(id, home, away));
 
 		// When
-		MatchRepository repository = inject.getInstance(MatchRepository.class);
+		MatchRepository repository = INJECT.getInstance(MatchRepository.class);
 		Match actualMatch = repository.find(id);
 
 		// Then
@@ -43,7 +41,7 @@ public class MatchRepositoryTest {
 		MatchId unknownId = MatchId.newMatchId();
 
 		// When
-		MatchRepository repository = inject.getInstance(MatchRepository.class);
+		MatchRepository repository = INJECT.getInstance(MatchRepository.class);
 		Match actualMatch = repository.find(unknownId);
 
 		// Then
